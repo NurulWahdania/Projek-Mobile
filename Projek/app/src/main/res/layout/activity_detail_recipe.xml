@@ -2,10 +2,10 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_layout_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA"
-    android:id="@+id/content_layout_detail"
+    android:background="?attr/colorBackground"
     tools:context="com.example.projek.DetailRecipeActivity">
 
     <LinearLayout
@@ -27,51 +27,52 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="120dp"
                 android:layout_gravity="bottom"
-                android:background="@drawable/gradient_overlay" />
+                android:background="@drawable/detail_image_gradient" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_gravity="top|end"
-                android:layout_margin="16dp">
+                android:layout_margin="16dp"
+                android:orientation="horizontal">
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/btn_share_recipe"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="12dp"
-                    app:fabSize="mini"
-                    app:tint="#FFFFFF"
-                    app:backgroundTint="#2C74B3"
+                    android:contentDescription="Bagikan Resep"
                     android:src="@android:drawable/ic_menu_share"
+                    app:backgroundTint="?attr/colorPrimary"
                     app:borderWidth="0dp"
-                    android:contentDescription="Bagikan Resep" />
+                    app:fabSize="mini"
+                    app:tint="?attr/colorOnPrimary" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/btn_save_recipe"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:fabSize="mini"
-                    app:tint="#FFFFFF"
-                    app:backgroundTint="#2C74B3"
+                    android:contentDescription="Simpan Resep"
                     android:src="@android:drawable/ic_menu_save"
+                    app:backgroundTint="?attr/colorPrimary"
                     app:borderWidth="0dp"
-                    android:contentDescription="Simpan Resep" />
+                    app:fabSize="mini"
+                    app:tint="?attr/colorOnPrimary" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/btn_remove_recipe"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:fabSize="mini"
-                    android:visibility="gone"
-                    app:tint="#FFFFFF"
-                    app:backgroundTint="#808B96"
+                    android:layout_marginStart="12dp"
+                    android:contentDescription="Hapus Resep"
                     android:src="@android:drawable/ic_menu_delete"
+                    android:visibility="gone"
+                    app:backgroundTint="?attr/colorSecondary"
                     app:borderWidth="0dp"
-                    android:contentDescription="Hapus Resep" />
+                    app:fabSize="mini"
+                    app:tint="?attr/colorOnSecondary" />
             </LinearLayout>
 
             <TextView
@@ -80,13 +81,13 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:padding="16dp"
-                android:textColor="#FFFFFF"
-                android:textSize="26sp"
-                android:textStyle="bold"
                 android:shadowColor="#80000000"
                 android:shadowDx="1"
                 android:shadowDy="1"
                 android:shadowRadius="3"
+                android:textColor="@color/white"
+                android:textSize="26sp"
+                android:textStyle="bold"
                 tools:text="Watermelon Salad with Feta, Walnut &amp; Nigella Seeds" />
 
             <ProgressBar
@@ -94,31 +95,33 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:visibility="gone"
-                android:indeterminateTint="#2C74B3"/>
+                android:indeterminateTint="?attr/colorPrimary"
+                android:visibility="gone" />
         </FrameLayout>
 
         <TextView
             android:id="@+id/tv_detail_error_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Gagal memuat detail resep. Silakan coba lagi."
             android:layout_gravity="center_horizontal"
-            android:padding="16dp"
-            android:textAlignment="center"
-            android:textColor="#DF5E5E"
-            android:visibility="gone"
-            android:background="#FFEBEE"
             android:layout_margin="16dp"
-            android:elevation="2dp"/>
+            android:background="?attr/colorErrorContainer"
+            android:elevation="2dp"
+            android:padding="16dp"
+            android:text="Gagal memuat detail resep. Silakan coba lagi."
+            android:textAlignment="center"
+            android:textColor="?attr/colorError"
+            android:visibility="gone" />
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            app:cardBackgroundColor="?attr/colorSurface"
             app:cardCornerRadius="12dp"
             app:cardElevation="3dp"
-            app:cardBackgroundColor="#FFFFFF">
+            app:strokeColor="?attr/colorPrimaryVariant"
+            app:strokeWidth="0.5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -130,21 +133,21 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
                         android:layout_width="28dp"
                         android:layout_height="28dp"
-                        android:tint="#2C74B3"
-                        android:src="@android:drawable/ic_menu_recent_history" />
+                        android:src="@android:drawable/ic_menu_recent_history"
+                        app:tint="?attr/colorPrimary" />
 
                     <TextView
                         android:id="@+id/tv_ready_in_minutes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:textColor="#2C74B3"
+                        android:textColor="?attr/colorPrimary"
                         android:textStyle="bold"
                         tools:text="25" />
 
@@ -152,33 +155,33 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="menit"
-                        android:textColor="#808B96" />
+                        android:textColor="?attr/colorOnSurfaceVariant" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#E0E0E0" />
+                    android:background="?attr/colorOutline" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
                         android:layout_width="28dp"
                         android:layout_height="28dp"
-                        android:tint="#2C74B3"
-                        android:src="@android:drawable/ic_menu_sort_by_size" />
+                        android:src="@android:drawable/ic_menu_sort_by_size"
+                        app:tint="?attr/colorPrimary" />
 
                     <TextView
                         android:id="@+id/tv_servings"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:textColor="#2C74B3"
+                        android:textColor="?attr/colorPrimary"
                         android:textStyle="bold"
                         tools:text="6" />
 
@@ -186,48 +189,50 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="porsi"
-                        android:textColor="#808B96" />
+                        android:textColor="?attr/colorOnSurfaceVariant" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#E0E0E0" />
+                    android:background="?attr/colorOutline" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
                         android:layout_width="28dp"
                         android:layout_height="28dp"
-                        android:tint="#2C74B3"
-                        android:src="@android:drawable/ic_menu_agenda" />
+                        android:src="@android:drawable/ic_menu_agenda"
+                        app:tint="?attr/colorPrimary" />
 
                     <TextView
                         android:id="@+id/tv_category"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:textColor="#2C74B3"
+                        android:textColor="?attr/colorPrimary"
                         android:textStyle="bold"
                         tools:text="Vegetarian" />
                 </LinearLayout>
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="?attr/colorSurface"
             app:cardCornerRadius="12dp"
             app:cardElevation="3dp"
-            app:cardBackgroundColor="#FFFFFF">
+            app:strokeColor="?attr/colorPrimaryVariant"
+            app:strokeWidth="0.5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -239,37 +244,39 @@
                     android:id="@+id/tv_description_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:text="Deskripsi"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#2C74B3"
-                    android:layout_marginBottom="8dp" />
+                    android:textStyle="bold" />
 
                 <View
                     android:layout_width="40dp"
                     android:layout_height="3dp"
-                    android:background="#2C74B3"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="8dp"
+                    android:background="?attr/colorPrimary" />
 
                 <TextView
                     android:id="@+id/tv_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#5D6D7E"
                     android:lineSpacingExtra="4dp"
+                    android:textColor="?attr/colorOnSurface"
                     tools:text="Need a gluten free, lacto ovo vegetarian, and primal hor d'oeuvre? Watermelon Salad with Feta, Walnut &amp; Nigella Seeds could be a great recipe to try. One portion of this dish contains roughly 10g of protein, 21g of fat, and a total of 334 calories. This recipe serves 6." />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="?attr/colorSurface"
             app:cardCornerRadius="12dp"
             app:cardElevation="3dp"
-            app:cardBackgroundColor="#FFFFFF">
+            app:strokeColor="?attr/colorPrimaryVariant"
+            app:strokeWidth="0.5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -281,37 +288,39 @@
                     android:id="@+id/tv_ingredients_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:text="Bahan-bahan"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#2C74B3"
-                    android:layout_marginBottom="8dp" />
+                    android:textStyle="bold" />
 
                 <View
                     android:layout_width="40dp"
                     android:layout_height="3dp"
-                    android:background="#2C74B3"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="8dp"
+                    android:background="?attr/colorPrimary" />
 
                 <TextView
                     android:id="@+id/tv_ingredients"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#5D6D7E"
                     android:lineSpacingExtra="8dp"
+                    android:textColor="?attr/colorOnSurface"
                     tools:text="• 0.17 cup walnut halves\n• 0.83 lb watermelon\n• 1.17 oz feta cheese\n• 0.5 sprigs mint\n• 0.17 tsp nigella seeds" />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="?attr/colorSurface"
             app:cardCornerRadius="12dp"
             app:cardElevation="3dp"
-            app:cardBackgroundColor="#FFFFFF">
+            app:strokeColor="?attr/colorPrimaryVariant"
+            app:strokeWidth="0.5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -323,27 +332,27 @@
                     android:id="@+id/tv_instructions_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:text="Langkah-langkah Pembuatan"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#2C74B3"
-                    android:layout_marginBottom="8dp" />
+                    android:textStyle="bold" />
 
                 <View
                     android:layout_width="40dp"
                     android:layout_height="3dp"
-                    android:background="#2C74B3"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="8dp"
+                    android:background="?attr/colorPrimary" />
 
                 <TextView
                     android:id="@+id/tv_instructions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#5D6D7E"
                     android:lineSpacingExtra="8dp"
+                    android:textColor="?attr/colorOnSurface"
                     tools:text="1. Soak walnuts in hot water for five minutes in a bowl. Rinse and cover with cold water and a pinch of salt.\n2. Let stand for a few minutes (it can soak for as long as half a day and will get even better with longer soaking). Rinse and drain.\n3. Cut your watermelon into cubes or use a spoon to scoop out the red flesh and put in a bowl.Cube or crumble the cheese over the watermelon.\n4. Add the walnut pieces and garnish with mint leaves.Put your nigella seeds in a small pan and toast briefly on medium heat until fragrant.\n5. Sprinkle seeds on the salad and enjoy!" />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 </ScrollView>
