@@ -7,26 +7,49 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.projek.HomeFragment" android:label="Resep Terbaru"
+        android:name="com.example.projek.HomeFragment"
+        android:label="Resep Terbaru"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/savedRecipesFragment"
-        android:name="com.example.projek.SavedRecipesFragment" android:label="Resep Tersimpan"
+        android:name="com.example.projek.SavedRecipesFragment"
+        android:label="Resep Tersimpan"
         tools:layout="@layout/fragment_saved_recipes" />
 
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.example.projek.SearchFragment" android:label="Cari Resep"
+        android:name="com.example.projek.SearchFragment"
+        android:label="Cari Resep"
         tools:layout="@layout/fragment_search" />
 
+    <fragment
+        android:id="@+id/dailyCalorieCalculatorFragment"
+        android:name="com.example.projek.DailyCalorieCalculatorFragment"
+        android:label="Kalkulator Kalori"
+        tools:layout="@layout/fragment_daily_calorie_calculator" >
+        <action
+            android:id="@+id/action_dailyCalorieCalculatorFragment_to_dailyCalorieTrackerFragment"
+            app:destination="@id/dailyCalorieTrackerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dailyCalorieTrackerFragment" android:name="com.example.projek.DailyCalorieTrackerFragment"
+        android:label="Pencatatan Kalori"
+        tools:layout="@layout/fragment_daily_calorie_tracker" >
+        <argument
+            android:name="dailyCalorieTarget"
+            app:argType="float"
+            android:defaultValue="0.0" />
+    </fragment>
     <action
         android:id="@+id/action_global_to_detailRecipeActivity"
         app:destination="@id/detailRecipeActivity" />
 
     <activity
         android:id="@+id/detailRecipeActivity"
-        android:name="com.example.projek.DetailRecipeActivity" android:label="Detail Resep"
+        android:name="com.example.projek.DetailRecipeActivity"
+        android:label="Detail Resep"
         tools:layout="@layout/activity_detail_recipe" />
 
 </navigation>

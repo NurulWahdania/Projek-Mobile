@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/et_edit_food_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nama Makanan Baru"
+        android:minHeight="48dp"
+        android:inputType="textCapSentences"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/et_edit_food_calories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Kalori Baru (kcal)"
+        android:minHeight="48dp"
+        android:inputType="number"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/et_edit_food_quantity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Kuantitas Baru (misal: 1.0)"
+        android:minHeight="48dp"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/et_edit_food_serving_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ukuran Porsi Baru (misal: porsi, gram)"
+        android:minHeight="48dp"
+        android:inputType="textCapSentences"
+        android:layout_marginBottom="8dp"/>
+
+</LinearLayout>

@@ -6,28 +6,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
-import com.example.projek.R; // R.java akan di-generate di package root
-import com.example.projek.Model.Recipe; // Perhatikan import package model Anda
-
+import com.example.projek.Model.Recipe;
+import com.example.projek.R;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class RecipeHomeAdapter extends RecyclerView.Adapter<RecipeHomeAdapter.RecipeViewHolder> {
-
-    // --- BAGIAN INI DIHAPUS KARENA TIDAK LAGI DIPERLUKAN ---
-    // public static final int MODE_HOME_SAVED = 0;
-    // public static final int MODE_SEARCH = 1;
-    // private int displayMode;
-    // --- AKHIR BAGIAN DIHAPUS ---
+public class RecipeHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final Context context;
-    private List<Recipe> recipes = new ArrayList<>();
+    private List<Recipe> recipes;
     private OnItemClickListener onItemClickListener;
+
+    private static final int VIEW_TYPE_ITEM = 0;
+    private static final int VIEW_TYPE_LOADING = 1;
+    private boolean isLoadingAdded = false;
 
     public interface OnItemClickListener {
         void onItemClick(Recipe recipe);
@@ -37,44 +33,85 @@ public class RecipeHomeAdapter extends RecyclerView.Adapter<RecipeHomeAdapter.Re
         this.onItemClickListener = listener;
     }
 
-    // --- MODIFIKASI KONSTRUKTOR (KEMBALIKAN KE VERSI AWAL) ---
-    // Konstruktor ini sekarang hanya menerima Context
     public RecipeHomeAdapter(Context context) {
         this.context = context;
-        // this.displayMode tidak lagi diperlukan
+        this.recipes = new ArrayList<>();
     }
-    // --- AKHIR MODIFIKASI KONSTRUKTOR ---
-
 
     public void setRecipes(List<Recipe> recipes) {
-        this.recipes = recipes;
-        notifyDataSetChanged(); // Memberi tahu adapter bahwa data telah berubah
+        this.recipes = new ArrayList<>(recipes);
+        notifyDataSetChanged();
     }
 
-    @NonNull
-    @Override
-    public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_recipe_home, parent, false);
-        return new RecipeViewHolder(view);
+    public void addAll(List<Recipe> newRecipes) {
+        int lastIndex = this.recipes.size();
+        this.recipes.addAll(newRecipes);
+        notifyItemRangeInserted(lastIndex, newRecipes.size());
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
-        Recipe recipe = recipes.get(position);
-        holder.bind(recipe);
+    // Metode privat untuk menambahkan item ke list
+    private void add(Recipe recipe) {
+        recipes.add(recipe);
+        notifyItemInserted(recipes.size() - 1);
+    }
+
+    public void addLoadingFooter() {
+        if (!isLoadingAdded) {
+            isLoadingAdded = true;
+            // PERBAIKAN: Gunakan 'add(null)' bukan 'add(new Recipe())'
+            // untuk menambahkan placeholder.
+            add(null);
+        }
+    }
+
+    public void removeLoadingFooter() {
+        if (isLoadingAdded && !recipes.isEmpty()) {
+            isLoadingAdded = false;
+            int position = recipes.size() - 1;
+            Recipe item = recipes.get(position);
+            // Cek apakah item terakhir adalah placeholder (null)
+            if (item == null) {
+                recipes.remove(position);
+                notifyItemRemoved(position);
+            }
+        }
     }
 
     @Override
     public int getItemCount() {
-        return recipes.size();
+        return recipes == null ? 0 : recipes.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return (position == recipes.size() - 1 && isLoadingAdded) ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
+    }
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        if (viewType == VIEW_TYPE_ITEM) {
+            View view = inflater.inflate(R.layout.item_recipe_home, parent, false);
+            return new RecipeViewHolder(view);
+        } else { // VIEW_TYPE_LOADING
+            View view = inflater.inflate(R.layout.item_loading, parent, false);
+            return new LoadingViewHolder(view);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        // Hanya bind data jika itu adalah RecipeViewHolder
+        if (getItemViewType(position) == VIEW_TYPE_ITEM) {
+            Recipe recipe = recipes.get(position);
+            ((RecipeViewHolder) holder).bind(recipe);
+        }
     }
 
     class RecipeViewHolder extends RecyclerView.ViewHolder {
         ImageView ivRecipeImage;
-        TextView tvRecipeTitle;
-        TextView tvReadyInMinutes;
-        TextView tvMealType;
-        TextView tvServing;
+        TextView tvRecipeTitle, tvReadyInMinutes, tvMealType, tvServing;
 
         public RecipeViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -84,45 +121,39 @@ public class RecipeHomeAdapter extends RecyclerView.Adapter<RecipeHomeAdapter.Re
             tvMealType = itemView.findViewById(R.id.tv_meal_type_home);
             tvServing = itemView.findViewById(R.id.tv_serving_home);
 
-            // Set OnClickListener untuk setiap item RecyclerView
             itemView.setOnClickListener(v -> {
                 if (onItemClickListener != null) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        onItemClickListener.onItemClick(recipes.get(position));
+                    int pos = getAdapterPosition();
+                    if (pos != RecyclerView.NO_POSITION) {
+                        onItemClickListener.onItemClick(recipes.get(pos));
                     }
                 }
             });
         }
 
         public void bind(Recipe recipe) {
-            // Memuat gambar menggunakan Glide
-            if (recipe.getImage() != null && !recipe.getImage().isEmpty()) {
-                Glide.with(context)
-                        .load(recipe.getImage())
-                        .placeholder(R.drawable.ic_placeholder)
-                        .error(R.drawable.ic_error)
-                        .into(ivRecipeImage);
-            } else {
-                ivRecipeImage.setImageResource(R.drawable.ic_placeholder);
-            }
-
             tvRecipeTitle.setText(recipe.getTitle());
 
-            // --- LOGIKA TAMPILAN UNTUK HOME DAN SAVED (KEMBALIKAN KE VERSI AWAL) ---
-            // Waktu Pembuatan (Tampilkan "-" jika null/0)
-            tvReadyInMinutes.setText("Waktu: " + (recipe.getReadyInMinutes() != null && recipe.getReadyInMinutes() > 0 ? recipe.getReadyInMinutes() : "-") + " menit");
-            tvReadyInMinutes.setVisibility(View.VISIBLE); // Selalu terlihat di Home/Saved
+            Integer minutes = recipe.getReadyInMinutes();
+            tvReadyInMinutes.setText(String.format(Locale.getDefault(), "Waktu: %s menit", (minutes != null && minutes > 0) ? minutes.toString() : "-"));
 
-            // Tipe Makanan (Tampilkan "Tidak Diketahui" jika null/kosong)
             String mealType = recipe.getMealType();
-            tvMealType.setText("Tipe: " + (mealType != null && !mealType.isEmpty() && !mealType.equalsIgnoreCase("Tidak Diketahui") ? mealType : "Tidak Diketahui"));
-            tvMealType.setVisibility(View.VISIBLE); // Selalu terlihat di Home/Saved
+            tvMealType.setText(String.format("Tipe: %s", (mealType != null && !mealType.isEmpty()) ? mealType : "Umum"));
 
-            // Porsi (Tampilkan "-" jika null/0)
-            tvServing.setText("Porsi: " + (recipe.getServings() != null && recipe.getServings() > 0 ? recipe.getServings() : "-"));
-            tvServing.setVisibility(View.VISIBLE); // Selalu terlihat di Home/Saved
-            // --- AKHIR LOGIKA TAMPILAN ---
+            Integer servings = recipe.getServings();
+            tvServing.setText(String.format(Locale.getDefault(), "Porsi: %s", (servings != null && servings > 0) ? servings.toString() : "-"));
+
+            Glide.with(context)
+                    .load(recipe.getImage())
+                    .placeholder(R.drawable.ic_placeholder)
+                    .error(R.drawable.ic_error)
+                    .into(ivRecipeImage);
+        }
+    }
+
+    private static class LoadingViewHolder extends RecyclerView.ViewHolder {
+        public LoadingViewHolder(@NonNull View itemView) {
+            super(itemView);
         }
     }
 }

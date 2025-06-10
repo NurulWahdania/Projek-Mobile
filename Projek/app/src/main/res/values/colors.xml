@@ -23,4 +23,29 @@
     <color name="dark_card_background">#212121</color>
     <color name="light_surface">#FFFFFF</color>
     <color name="dark_surface">#1F1F1F</color>
+
+
+    <!-- Primary Color Theme (Blue) -->
+    <color name="colorPrimary">#2C74B3</color>
+    <color name="colorPrimaryDark">#205295</color>
+    <color name="colorAccent">#144272</color>
+
+    <!-- Gray Shades -->
+    <color name="lightGray">#F5F7FA</color>
+    <color name="mediumGray">#808B96</color>
+    <color name="darkGray">#5D6D7E</color>
+
+    <!-- Text Colors -->
+    <color name="textPrimary">#2C74B3</color>
+    <color name="textSecondary">#5D6D7E</color>
+    <color name="textLight">#808B96</color>
+
+    <!-- Card and Background Colors -->
+    <color name="cardBackground">#FFFFFF</color>
+    <color name="appBackground">#F5F7FA</color>
+    <color name="highlightBackground">#E9F0F9</color>
+
+    <!-- Status Colors -->
+    <color name="errorColor">#DF5E5E</color>
+    <color name="errorBackground">#FFEBEE</color>
 </resources>

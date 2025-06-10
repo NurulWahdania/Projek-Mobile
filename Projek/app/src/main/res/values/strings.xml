@@ -1,5 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Projek</string>
+    <string-array name="activity_level_options">
+        <item>Tidak Aktif (Sedentary)</item>
+        <item>Cukup Aktif (Lightly active)</item>
+        <item>Aktif Moderat (Moderately active)</item>
+        <item>Sangat Aktif (Very active)</item>
+        <item>Ekstra Aktif (Extra active)</item>
+    </string-array>
+
+    <string-array name="weight_goal_options">
+        <item>Mempertahankan Berat Badan</item>
+        <item>Menurunkan Berat Badan (Ringan)</item>
+        <item>Menurunkan Berat Badan (Normal)</item>
+        <item>Menambah Berat Badan (Ringan)</item>
+        <item>Menambah Berat Badan (Normal)</item>
+    </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

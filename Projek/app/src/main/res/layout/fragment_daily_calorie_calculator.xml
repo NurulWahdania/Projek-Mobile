@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DailyCalorieCalculatorFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Kalkulator Kebutuhan Kalori Harian"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:textColor="?android:textColorPrimary" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Usia (tahun):"
+            android:textSize="16sp"
+            android:textColor="?android:textColorPrimary" />
+
+        <EditText
+            android:id="@+id/et_age"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="Masukkan usia Anda"
+            android:minHeight="48dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Jenis Kelamin:"
+            android:textSize="16sp"
+            android:textColor="?android:textColorPrimary" />
+
+        <RadioGroup
+            android:id="@+id/rg_gender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <RadioButton
+                android:id="@+id/rb_male"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pria"
+                android:checked="true"
+                android:textColor="?android:textColorPrimary" />
+
+            <RadioButton
+                android:id="@+id/rb_female"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wanita"
+                android:textColor="?android:textColorPrimary" />
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Berat Badan (kg):"
+            android:textSize="16sp"
+            android:textColor="?android:textColorPrimary" />
+
+        <EditText
+            android:id="@+id/et_weight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:hint="Masukkan berat badan Anda"
+            android:minHeight="48dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tinggi Badan (cm):"
+            android:textSize="16sp"
+            android:textColor="?android:textColorPrimary" />
+
+        <EditText
+            android:id="@+id/et_height"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:hint="Masukkan tinggi badan Anda"
+            android:minHeight="48dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tingkat Aktivitas:"
+            android:textSize="16sp"
+            android:textColor="?android:textColorPrimary" />
+
+        <Spinner
+            android:id="@+id/spinner_activity_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/activity_level_options"
+            android:minHeight="48dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tujuan Berat Badan:"
+            android:textSize="16sp"
+            android:textColor="?android:textColorPrimary"/>
+
+        <Spinner
+            android:id="@+id/spinner_goal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:entries="@array/weight_goal_options"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Target Berat Badan (kg):"
+            android:textSize="16sp"
+            android:textColor="?android:textColorPrimary" />
+
+        <EditText
+            android:id="@+id/et_target_weight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:hint="Masukkan target berat badan Anda"
+            android:minHeight="48dp"
+            android:layout_marginBottom="24dp" />
+
+        <Button
+            android:id="@+id/btn_calculate_calories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hitung Kalori"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:id="@+id/tv_result_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hasil Perhitungan:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"
+            android:textColor="?android:textColorPrimary"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_bmr_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="?android:textColorPrimary"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone"
+            tools:text="BMR: 1500 kcal" />
+
+        <TextView
+            android:id="@+id/tv_tdee_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="?android:textColorPrimary"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone"
+            tools:text="TDEE: 2000 kcal" />
+
+        <TextView
+            android:id="@+id/tv_daily_calories_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="?android:textColorPrimary"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"
+            tools:text="Kebutuhan Kalori Harian: 2000 kcal" />
+
+        <Button
+            android:id="@+id/btn_continue_to_tracking"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lanjutkan ke Pencatatan Kalori"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar_calculator_load"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp" />
+    </LinearLayout>
+</ScrollView>

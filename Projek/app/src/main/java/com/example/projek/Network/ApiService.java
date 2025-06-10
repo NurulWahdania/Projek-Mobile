@@ -37,4 +37,16 @@ public interface ApiService {
             @Query("intolerances") String intolerances, // Bisa kosong
             @Query("number") int number // Jumlah hasil
     );
+
+    @Headers({
+            "x-rapidapi-key: " + Constants.API_KEY,
+            "x-rapidapi-host: " + Constants.API_HOST
+    })
+    @GET("recipes/complexSearch")
+    Call<ApiResponse> searchRecipes(
+            @Query("query") String query,
+            @Query("number") int number,
+            @Query("offset") int offset
+    );
+
 }

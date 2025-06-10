@@ -1,4 +1,4 @@
-package com.example.projek.Adapter; // Pastikan package ini sesuai
+package com.example.projek.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,8 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.projek.R; // R.java akan di-generate di package root
-import com.example.projek.Model.Recipe; // Perhatikan import package model Anda
+import com.example.projek.R;
+import com.example.projek.Model.Recipe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,6 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
     @NonNull
     @Override
     public SearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate layout item_recipe_search.xml yang khusus untuk pencarian
         View view = LayoutInflater.from(context).inflate(R.layout.item_recipe_search, parent, false);
         return new SearchViewHolder(view);
     }
@@ -59,16 +58,14 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
         return recipes.size();
     }
 
-    // ViewHolder khusus untuk tampilan pencarian
     class SearchViewHolder extends RecyclerView.ViewHolder {
         ImageView ivRecipeImage;
         TextView tvRecipeTitle;
-        // Tidak ada TextView untuk waktu, tipe, porsi di sini karena mereka tidak ada di item_recipe_search.xml
 
         public SearchViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivRecipeImage = itemView.findViewById(R.id.iv_recipe_image_home); // Menggunakan ID yang sama dari item_recipe_home
-            tvRecipeTitle = itemView.findViewById(R.id.tv_recipe_title_home); // Menggunakan ID yang sama dari item_recipe_home
+            ivRecipeImage = itemView.findViewById(R.id.iv_recipe_image_home);
+            tvRecipeTitle = itemView.findViewById(R.id.tv_recipe_title_home);
 
             itemView.setOnClickListener(v -> {
                 if (onItemClickListener != null) {
@@ -81,7 +78,6 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
         }
 
         public void bind(Recipe recipe) {
-            // Hanya memuat gambar dan judul
             if (recipe.getImage() != null && !recipe.getImage().isEmpty()) {
                 Glide.with(context)
                         .load(recipe.getImage())
@@ -92,8 +88,6 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
                 ivRecipeImage.setImageResource(R.drawable.ic_placeholder);
             }
             tvRecipeTitle.setText(recipe.getTitle());
-
-            // Tidak perlu ada logika untuk menyembunyikan elemen lain karena layoutnya memang tidak punya
         }
     }
 }

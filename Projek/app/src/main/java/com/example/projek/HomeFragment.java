@@ -10,9 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,17 +17,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.example.projek.Adapter.RecipeHomeAdapter;
+import com.example.projek.Network.ApiResponse;
 import com.example.projek.Model.Recipe;
-import com.example.projek.Model.RecipeResults;
 import com.example.projek.Network.ApiService;
 import com.example.projek.Network.RetrofitClient;
-import com.example.projek.Utils.AppExecutors;
-
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,8 +35,13 @@ public class HomeFragment extends Fragment {
     private TextView tvErrorMessage;
     private Button btnRefresh;
     private ApiService apiService;
-    private AppExecutors appExecutors;
-    private Handler mainHandler = new Handler(Looper.getMainLooper());
+    private LinearLayoutManager layoutManager;
+
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+    private int currentOffset = 0;
+    private final int PAGE_SIZE = 10;
+    private static final String QUERY_TAG = "main course";
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -57,77 +54,132 @@ public class HomeFragment extends Fragment {
         btnRefresh = view.findViewById(R.id.btn_refresh);
 
         apiService = RetrofitClient.getClient();
-        appExecutors = AppExecutors.getInstance();
+        setupRecyclerView();
 
-        rvRecipes.setLayoutManager(new LinearLayoutManager(getContext()));
-        // --- MODIFIKASI BARIS INI ---
-        adapter = new RecipeHomeAdapter(getContext()); // <--- UBAH DI SINI
-        // --- AKHIR MODIFIKASI ---
-        rvRecipes.setAdapter(adapter);
-
-        adapter.setOnItemClickListener(recipe -> {
-            Intent intent = new Intent(getContext(), DetailRecipeActivity.class);
-            intent.putExtra("recipeId", recipe.getId());
-            startActivity(intent);
-        });
-
-        btnRefresh.setOnClickListener(v -> loadRandomRecipes());
-
-        loadRandomRecipes();
+        btnRefresh.setOnClickListener(v -> loadFirstPage());
+        loadFirstPage();
 
         return view;
     }
 
-    private void loadRandomRecipes() {
-        if (!isNetworkAvailable()) {
-            showErrorState("Tidak ada koneksi internet. Resep tidak dapat dimuat secara offline.");
-            return;
-        }
+    private void setupRecyclerView() {
+        layoutManager = new LinearLayoutManager(getContext());
+        rvRecipes.setLayoutManager(layoutManager);
+        adapter = new RecipeHomeAdapter(getContext());
+        rvRecipes.setAdapter(adapter);
 
-        progressBar.setVisibility(View.VISIBLE);
-        tvErrorMessage.setVisibility(View.GONE);
-        btnRefresh.setVisibility(View.GONE);
-        rvRecipes.setVisibility(View.GONE);
+        adapter.setOnItemClickListener(recipe -> {
+            if (recipe != null) {
+                Intent intent = new Intent(getContext(), DetailRecipeActivity.class);
+                intent.putExtra("recipeId", recipe.getId());
+                startActivity(intent);
+            }
+        });
 
-        appExecutors.networkIO().execute(() -> {
-            Call<RecipeResults> call = apiService.getRandomRecipes(10, "main course");
+        rvRecipes.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int visibleItemCount = layoutManager.getChildCount();
+                int totalItemCount = layoutManager.getItemCount();
+                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-            call.enqueue(new Callback<RecipeResults>() {
-                @Override
-                public void onResponse(@NonNull Call<RecipeResults> call, @NonNull Response<RecipeResults> response) {
-                    mainHandler.post(() -> {
-                        progressBar.setVisibility(View.GONE);
-                        if (response.isSuccessful() && response.body() != null) {
-                            // Perubahan di sini: Menggunakan getRecipesList()
-                            List<Recipe> recipes = response.body().getRecipesList();
-
-                            Log.d("HomeFragment", "Jumlah resep yang diterima: " + (recipes != null ? recipes.size() : "null"));
-                            if (recipes != null && !recipes.isEmpty()) {
-                                adapter.setRecipes(recipes);
-                                rvRecipes.setVisibility(View.VISIBLE);
-                            } else {
-                                showErrorState("Tidak ada resep yang ditemukan.");
-                            }
-                        } else {
-                            showErrorState("Gagal memuat resep: " + response.message() + " (Kode: " + response.code() + ")");
-                            Log.e("HomeFragment", "Error response: " + response.code() + " - " + response.message());
-                        }
-                    });
+                if (!isLoading && !isLastPage) {
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                            && firstVisibleItemPosition >= 0
+                            && totalItemCount >= PAGE_SIZE) {
+                        loadNextPage();
+                    }
                 }
-
-                @Override
-                public void onFailure(@NonNull Call<RecipeResults> call, @NonNull Throwable t) {
-                    mainHandler.post(() -> {
-                        progressBar.setVisibility(View.GONE);
-                        showErrorState("Terjadi kesalahan jaringan: " + t.getMessage());
-                        Log.e("HomeFragment", "Network error: ", t);
-                    });
-                }
-            });
+            }
         });
     }
 
+    private void loadFirstPage() {
+        Log.d("HomeFragment", "Memuat halaman pertama...");
+        if (!isNetworkAvailable()) {
+            showErrorState("Tidak ada koneksi internet.");
+            return;
+        }
+        showLoading(true);
+        currentOffset = 0;
+        isLastPage = false;
+
+        callApi().enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
+                showLoading(false);
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Recipe> recipes = response.body().getResults();
+                    if (recipes == null || recipes.isEmpty()) {
+                        showErrorState("Tidak ada resep yang ditemukan.");
+                        return;
+                    }
+                    adapter.setRecipes(recipes);
+                    if (recipes.size() >= PAGE_SIZE) {
+                        adapter.addLoadingFooter();
+                    } else {
+                        isLastPage = true;
+                    }
+                } else {
+                    showErrorState("Gagal memuat resep: " + response.message());
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
+                showLoading(false);
+                showErrorState("Kesalahan Jaringan: " + t.getMessage());
+            }
+        });
+    }
+
+    private void loadNextPage() {
+        Log.d("HomeFragment", "Memuat halaman berikutnya... Offset: " + currentOffset);
+        isLoading = true;
+        currentOffset += PAGE_SIZE;
+
+        callApi().enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
+                adapter.removeLoadingFooter();
+                isLoading = false;
+
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Recipe> newRecipes = response.body().getResults();
+                    adapter.addAll(newRecipes);
+                    if (newRecipes.size() >= PAGE_SIZE) {
+                        adapter.addLoadingFooter();
+                    } else {
+                        isLastPage = true;
+                    }
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
+                isLoading = false;
+                Log.e("HomeFragment", "Gagal load more: ", t);
+            }
+        });
+    }
+
+    private Call<ApiResponse> callApi() {
+        // Pemanggilan ini sekarang sudah sesuai dengan definisi di ApiService
+        return apiService.searchRecipes(QUERY_TAG, PAGE_SIZE, currentOffset);
+    }
+
+    private void showLoading(boolean show) {
+        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show) {
+            rvRecipes.setVisibility(View.GONE);
+            tvErrorMessage.setVisibility(View.GONE);
+            btnRefresh.setVisibility(View.GONE);
+        } else {
+            rvRecipes.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void showErrorState(String message) {
+        progressBar.setVisibility(View.GONE);
         rvRecipes.setVisibility(View.GONE);
         tvErrorMessage.setText(message);
         tvErrorMessage.setVisibility(View.VISIBLE);
@@ -135,11 +187,8 @@ public class HomeFragment extends Fragment {
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-        }
-        return false;
+        ConnectivityManager cm = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 }

@@ -1,8 +1,6 @@
 package com.example.projek.Model;
 
-import androidx.room.TypeConverters;
 
-import com.example.projek.Database.NutrientListConverter; // Perhatikan perubahan package
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -18,7 +16,6 @@ public class Ingredient implements Serializable {
     @SerializedName("unit")
     private String unit;
     @SerializedName("nutrients")
-    @TypeConverters(NutrientListConverter.class)
     private List<Nutrient> nutrients;
 
     // Constructor, Getters, and Setters

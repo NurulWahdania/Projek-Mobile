@@ -1,38 +1,14 @@
 package com.example.projek.Model;
 
-import androidx.room.Embedded;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
-
-// Import TypeConverters dari package Database Anda (sesuaikan path jika berbeda)
-import com.example.projek.Database.InstructionListConverter;
-import com.example.projek.Database.IngredientListConverter;
-import com.example.projek.Database.NutritionConverter;
-import com.example.projek.Database.NutrientListConverter;
-import com.example.projek.Database.EquipmentListConverter;
-import com.example.projek.Database.StepListConverter;
-import com.example.projek.Database.PropertyListConverter; // Digunakan oleh Nutrition
-import com.example.projek.Database.FlavonoidListConverter; // Digunakan oleh Nutrition
-import com.example.projek.Database.StringListConverter; // <--- PENTING: Import Converter untuk List<String>
-
 import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
 import java.util.List;
-import java.util.ArrayList; // Pastikan ini terimport jika belum ada
+import java.util.ArrayList;
 
-@Entity(tableName = "saved_recipes")
-// Perhatikan: Tambahkan PropertyListConverter.class, FlavonoidListConverter.class, dan StringListConverter.class di sini
-@TypeConverters({InstructionListConverter.class, IngredientListConverter.class, NutritionConverter.class,
-        NutrientListConverter.class, EquipmentListConverter.class, StepListConverter.class,
-        PropertyListConverter.class, FlavonoidListConverter.class, // Untuk sub-objek Nutrition
-        StringListConverter.class}) // <--- PENTING: Tambahkan ini untuk List<String>
 public class Recipe implements Serializable {
 
-    @PrimaryKey
     @SerializedName("id")
-    private int id;
+    private int id; // ID tetap ada
     @SerializedName("image")
     private String image;
     @SerializedName("imageType")
@@ -86,35 +62,30 @@ public class Recipe implements Serializable {
     @SerializedName("summary")
     private String summary;
 
-    @Embedded
     @SerializedName("nutrition")
     private Nutrition nutrition;
 
-    // --- PERBAIKAN PENTING DI SINI untuk ingredients ---
-    @SerializedName(value = "extendedIngredients", alternate = {"ingredients"}) // <--- UBAH BARIS INI!
+    @SerializedName(value = "extendedIngredients", alternate = {"ingredients"})
     private List<Ingredient> ingredients;
-    // --- AKHIR PERBAIKAN ingredients ---
 
     @SerializedName("analyzedInstructions")
     private List<AnalyzedInstruction> analyzedInstructions;
 
-    // --- BAGIAN BARU: FIELD UNTUK DISHTYPES, CUISINES, OCCASIONS ---
     @SerializedName("dishTypes")
-    @TypeConverters(StringListConverter.class)
     private List<String> dishTypes;
 
     @SerializedName("cuisines")
-    @TypeConverters(StringListConverter.class)
     private List<String> cuisines;
 
     @SerializedName("occasions")
-    @TypeConverters(StringListConverter.class)
     private List<String> occasions;
-    // --- AKHIR BAGIAN BARU ---
+
+    @SerializedName("caloricBreakdown")
+    private CaloricBreakdown caloricBreakdown;
 
 
-    // Constructor (Pastikan ini sudah diperbarui untuk menyertakan field baru)
-    public Recipe(int id, String image, String imageType, String title, Integer readyInMinutes, Integer servings, String sourceUrl, Boolean vegetarian, Boolean vegan, Boolean glutenFree, Boolean dairyFree, Boolean veryHealthy, Boolean cheap, Boolean veryPopular, Boolean sustainable, Boolean lowFodmap, Integer weightWatcherSmartPoints, String gaps, Integer preparationMinutes, Integer cookingMinutes, Integer aggregateLikes, Double healthScore, String creditsText, String license, String sourceName, Double pricePerServing, String summary, Nutrition nutrition, List<Ingredient> ingredients, List<AnalyzedInstruction> analyzedInstructions, List<String> dishTypes, List<String> cuisines, List<String> occasions) {
+    // Constructor
+    public Recipe(int id, String image, String imageType, String title, Integer readyInMinutes, Integer servings, String sourceUrl, Boolean vegetarian, Boolean vegan, Boolean glutenFree, Boolean dairyFree, Boolean veryHealthy, Boolean cheap, Boolean veryPopular, Boolean sustainable, Boolean lowFodmap, Integer weightWatcherSmartPoints, String gaps, Integer preparationMinutes, Integer cookingMinutes, Integer aggregateLikes, Double healthScore, String creditsText, String license, String sourceName, Double pricePerServing, String summary, Nutrition nutrition, List<Ingredient> ingredients, List<AnalyzedInstruction> analyzedInstructions, List<String> dishTypes, List<String> cuisines, List<String> occasions, CaloricBreakdown caloricBreakdown) {
         this.id = id;
         this.image = image;
         this.imageType = imageType;
@@ -148,10 +119,11 @@ public class Recipe implements Serializable {
         this.dishTypes = dishTypes;
         this.cuisines = cuisines;
         this.occasions = occasions;
+        this.caloricBreakdown = caloricBreakdown;
     }
 
 
-    // Getters
+    // Getters (tetap sama)
     public int getId() { return id; }
     public String getImage() { return image; }
     public String getImageType() { return imageType; }
@@ -182,14 +154,12 @@ public class Recipe implements Serializable {
     public Nutrition getNutrition() { return nutrition; }
     public List<Ingredient> getIngredients() { return ingredients; }
     public List<AnalyzedInstruction> getAnalyzedInstructions() { return analyzedInstructions; }
-
-    // --- GETTERS BARU UNTUK FIELD BARU ---
     public List<String> getDishTypes() { return dishTypes; }
     public List<String> getCuisines() { return cuisines; }
     public List<String> getOccasions() { return occasions; }
-    // --- AKHIR GETTERS BARU ---
+    public CaloricBreakdown getCaloricBreakdown() { return caloricBreakdown; }
 
-    // Setters
+    // Setters (tetap sama)
     public void setId(int id) { this.id = id; }
     public void setImage(String image) { this.image = image; }
     public void setImageType(String imageType) { this.imageType = imageType; }
@@ -220,19 +190,15 @@ public class Recipe implements Serializable {
     public void setNutrition(Nutrition nutrition) { this.nutrition = nutrition; }
     public void setIngredients(List<Ingredient> ingredients) { this.ingredients = ingredients; }
     public void setAnalyzedInstructions(List<AnalyzedInstruction> analyzedInstructions) { this.analyzedInstructions = analyzedInstructions; }
-
-    // --- SETTERS BARU UNTUK FIELD BARU ---
     public void setDishTypes(List<String> dishTypes) { this.dishTypes = dishTypes; }
     public void setCuisines(List<String> cuisines) { this.cuisines = cuisines; }
     public void setOccasions(List<String> occasions) { this.occasions = occasions; }
-    // --- AKHIR SETTERS BARU ---
-
+    public void setCaloricBreakdown(CaloricBreakdown caloricBreakdown) { this.caloricBreakdown = caloricBreakdown; }
 
     public String getMealType() {
         StringBuilder categories = new StringBuilder();
         boolean firstCategory = true;
 
-        // Kategori Diet
         if (vegetarian != null && vegetarian) {
             categories.append("Vegetarian");
             firstCategory = false;
@@ -253,13 +219,9 @@ public class Recipe implements Serializable {
             firstCategory = false;
         }
 
-        // Kategori Tipe Hidangan (Dish Types)
-        // Cek apakah dishTypes tidak null dan tidak kosong sebelum mengiterasi
         if (this.dishTypes != null && !this.dishTypes.isEmpty()) {
             for (String type : this.dishTypes) {
-                // Hindari duplikasi jika "salad" sudah termasuk dalam kategori diet umum
-                // Anda bisa filter lebih lanjut di sini jika ingin menghilangkan "main course" dll.
-                if (!type.equalsIgnoreCase("main course") && !type.equalsIgnoreCase("main dish") && !type.equalsIgnoreCase("lunch") && !type.equalsIgnoreCase("dinner") && !type.equalsIgnoreCase("snack")) { // Contoh filter lebih banyak
+                if (!type.equalsIgnoreCase("main course") && !type.equalsIgnoreCase("main dish") && !type.equalsIgnoreCase("lunch") && !type.equalsIgnoreCase("dinner") && !type.equalsIgnoreCase("snack")) {
                     if (!firstCategory) categories.append(", ");
                     categories.append(type);
                     firstCategory = false;
@@ -267,8 +229,6 @@ public class Recipe implements Serializable {
             }
         }
 
-        // Kategori Masakan (Cuisines)
-        // Cek apakah cuisines tidak null dan tidak kosong sebelum mengiterasi
         if (this.cuisines != null && !this.cuisines.isEmpty()) {
             for (String cuisine : this.cuisines) {
                 if (!firstCategory) categories.append(", ");
@@ -277,8 +237,6 @@ public class Recipe implements Serializable {
             }
         }
 
-        // Kategori Acara (Occasions)
-        // Cek apakah occasions tidak null dan tidak kosong sebelum mengiterasi
         if (this.occasions != null && !this.occasions.isEmpty()) {
             for (String occasion : this.occasions) {
                 if (!firstCategory) categories.append(", ");
@@ -286,7 +244,6 @@ public class Recipe implements Serializable {
                 firstCategory = false;
             }
         }
-
 
         if (categories.length() == 0) {
             return "Tidak Diketahui";

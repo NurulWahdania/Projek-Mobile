@@ -1,9 +1,6 @@
 package com.example.projek.Model;
 
-import androidx.room.TypeConverters;
 
-import com.example.projek.Database.EquipmentListConverter; // Perhatikan perubahan package
-import com.example.projek.Database.IngredientListConverter; // Perhatikan perubahan package
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -15,10 +12,8 @@ public class Step implements Serializable {
     @SerializedName("step")
     private String step;
     @SerializedName("ingredients")
-    @TypeConverters(IngredientListConverter.class)
     private List<Ingredient> ingredients;
     @SerializedName("equipment")
-    @TypeConverters(EquipmentListConverter.class)
     private List<Equipment> equipment;
 
     // Constructor, Getters, and Setters

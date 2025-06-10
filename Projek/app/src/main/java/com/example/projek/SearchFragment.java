@@ -24,7 +24,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.projek.Adapter.SearchResultAdapter; // <--- Import ini sudah benar
+import com.example.projek.Adapter.SearchResultAdapter;
 import com.example.projek.Model.Recipe;
 import com.example.projek.Model.RecipeResults;
 import com.example.projek.Network.ApiService;
@@ -45,7 +45,7 @@ public class SearchFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView tvErrorMessage;
 
-    private SearchResultAdapter adapter; // <--- Tipe variabel ini sudah benar
+    private SearchResultAdapter adapter;
     private ApiService apiService;
     private AppExecutors appExecutors;
     private Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -67,14 +67,13 @@ public class SearchFragment extends Fragment {
         appExecutors = AppExecutors.getInstance();
 
         rvSearchResults.setLayoutManager(new LinearLayoutManager(requireContext()));
-        // --- MODIFIKASI BARIS INI ---
-        adapter = new SearchResultAdapter(requireContext()); // <--- UBAH NAMA KELAS DI SINI!
-        // --- AKHIR MODIFIKASI ---
+        adapter = new SearchResultAdapter(requireContext());
         rvSearchResults.setAdapter(adapter);
 
         adapter.setOnItemClickListener(recipe -> {
             Intent intent = new Intent(requireContext(), DetailRecipeActivity.class);
             intent.putExtra("recipeId", recipe.getId());
+            intent.putExtra("isSavedRecipe", false); // Resep dari API bukan resep yang disimpan
             startActivity(intent);
         });
 

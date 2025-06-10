@@ -4,31 +4,31 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.LinearLayout; // Import ini sudah benar
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.projek.Helper.DatabaseHelper; // Perhatikan import package Helper Anda
-import com.example.projek.Model.AnalyzedInstruction; // Perhatikan import package Model Anda
-import com.example.projek.Model.Ingredient; // Perhatikan import package Model Anda
-import com.example.projek.Model.Nutrient; // Perhatikan import package Model Anda
-import com.example.projek.Model.Recipe; // Perhatikan import package Model Anda
-import com.example.projek.Model.Step; // Perhatikan import package Model Anda
-import com.example.projek.Network.ApiService; // Perhatikan import package Network Anda
-import com.example.projek.Network.RetrofitClient; // Perhatikan import package Network Anda
-import com.example.projek.Utils.AppExecutors; // Perhatikan import package Utils Anda
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import com.example.projek.Helper.DatabaseHelper;
+import com.example.projek.Model.AnalyzedInstruction;
+import com.example.projek.Model.Ingredient;
+import com.example.projek.Model.Recipe;
+import com.example.projek.Model.Step;
+import com.example.projek.Network.ApiService;
+import com.example.projek.Network.RetrofitClient;
+import com.example.projek.Utils.AppExecutors;
 
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,18 +38,16 @@ public class DetailRecipeActivity extends AppCompatActivity {
 
     private ImageView ivRecipeImage;
     private TextView tvRecipeTitle, tvReadyInMinutes, tvServings, tvCategory,
-            tvDescription, tvIngredients, tvNutritionInfo, tvInstructions;
-    private Button btnSaveRecipe, btnRemoveRecipe;
+            tvDescription, tvIngredients, tvInstructions;
+    private FloatingActionButton btnSaveRecipe, btnRemoveRecipe, btnShareRecipe;
     private ProgressBar progressBarDetail;
     private TextView tvDetailErrorMessage;
-    // Jika Anda punya ID di root LinearLayout ScrollView, Anda bisa uncomment baris ini
-    // private LinearLayout detailContentLayout;
+    private View contentLayout; // Layout utama untuk konten
 
     private Recipe currentRecipe;
     private DatabaseHelper databaseHelper;
     private ApiService apiService;
     private AppExecutors appExecutors;
-    private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,37 +55,25 @@ public class DetailRecipeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail_recipe);
 
         initViews();
-        databaseHelper = new DatabaseHelper(this);
+        databaseHelper = DatabaseHelper.getInstance(this);
         apiService = RetrofitClient.getClient();
         appExecutors = AppExecutors.getInstance();
 
-        // Dapatkan ID resep dari Intent yang dikirim HomeFragment/SearchFragment
-        int recipeId = getIntent().getIntExtra("recipeId", -1); // <--- SET BREAKPOINT DI SINI
-        Log.d("DetailActivity", "DetailActivity menerima recipeId: " + recipeId); // LOG INI SUDAH ADA
+        int currentRecipeId = getIntent().getIntExtra("recipeId", -1);
+        boolean currentIsSavedRecipe = getIntent().getBooleanExtra("isSavedRecipe", false);
 
-        if (recipeId != -1) {
-            loadRecipeDetails(recipeId); // Panggil metode untuk memuat detail resep
+        if (currentRecipeId != -1) {
+            if (currentIsSavedRecipe) {
+                loadRecipeDetailsFromDatabase(currentRecipeId);
+            } else {
+                loadRecipeDetailsFromApi(currentRecipeId);
+            }
         } else {
             Toast.makeText(this, "ID Resep tidak valid.", Toast.LENGTH_SHORT).show();
-            finish(); // Tutup activity jika ID resep tidak ada
+            finish();
         }
 
-        // Listener untuk tombol Simpan dan Hapus
-        // Perhatikan: currentRecipe baru akan terisi setelah loadRecipeDetails berhasil
-        btnSaveRecipe.setOnClickListener(v -> {
-            if (currentRecipe != null) {
-                saveRecipe(currentRecipe);
-            } else {
-                Toast.makeText(DetailRecipeActivity.this, "Data resep belum dimuat sepenuhnya.", Toast.LENGTH_SHORT).show();
-            }
-        });
-        btnRemoveRecipe.setOnClickListener(v -> {
-            if (currentRecipe != null) {
-                showDeleteConfirmationDialog(currentRecipe);
-            } else {
-                Toast.makeText(DetailRecipeActivity.this, "Data resep belum dimuat sepenuhnya.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        setupListeners();
     }
 
     private void initViews() {
@@ -98,172 +84,182 @@ public class DetailRecipeActivity extends AppCompatActivity {
         tvCategory = findViewById(R.id.tv_category);
         tvDescription = findViewById(R.id.tv_description);
         tvIngredients = findViewById(R.id.tv_ingredients);
-        tvNutritionInfo = findViewById(R.id.tv_nutrition_info);
         tvInstructions = findViewById(R.id.tv_instructions);
         btnSaveRecipe = findViewById(R.id.btn_save_recipe);
         btnRemoveRecipe = findViewById(R.id.btn_remove_recipe);
+        btnShareRecipe = findViewById(R.id.btn_share_recipe);
         progressBarDetail = findViewById(R.id.progress_bar_detail);
         tvDetailErrorMessage = findViewById(R.id.tv_detail_error_message);
-        // Jika Anda ingin mengontrol visibilitas seluruh layout konten detail,
-        // dan Anda sudah memberikan android:id="@+id/detail_content_layout"
-        // pada LinearLayout root di ScrollView Anda, Anda bisa uncomment ini:
-        // detailContentLayout = findViewById(R.id.detail_content_layout);
+        contentLayout = findViewById(R.id.content_layout_detail); // Pastikan ID ini ada di XML Anda
     }
 
-    private void loadRecipeDetails(int recipeId) {
-        // Tampilkan loading state
-        progressBarDetail.setVisibility(View.VISIBLE);
-        tvDetailErrorMessage.setVisibility(View.GONE);
-        // Sembunyikan semua elemen UI resep saat loading
-        setRecipeDetailsVisibility(View.GONE); // Metode baru untuk menyembunyikan/menampilkan UI
+    private void setupListeners() {
+        btnSaveRecipe.setOnClickListener(v -> {
+            if (currentRecipe != null) saveRecipe(currentRecipe);
+        });
+        btnRemoveRecipe.setOnClickListener(v -> {
+            if (currentRecipe != null) showDeleteConfirmationDialog(currentRecipe);
+        });
+        btnShareRecipe.setOnClickListener(v -> shareRecipe());
+    }
 
-        appExecutors.networkIO().execute(() -> {
-            Call<Recipe> call = apiService.getRecipeDetails(recipeId); // Panggil API detail resep
+    private void showLoading(boolean isLoading) {
+        progressBarDetail.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        if (contentLayout != null) {
+            contentLayout.setVisibility(isLoading ? View.GONE : View.VISIBLE);
+        }
+    }
 
-            call.enqueue(new Callback<Recipe>() {
-                @Override
-                public void onResponse(@NonNull Call<Recipe> call, @NonNull Response<Recipe> response) {
-                    mainHandler.post(() -> {
-                        progressBarDetail.setVisibility(View.GONE);
-                        if (response.isSuccessful() && response.body() != null) {
-                            currentRecipe = response.body(); // BARIS INI BENAR HANYA DI SINI
-                            displayRecipeDetails(currentRecipe); // Tampilkan detail
-                            checkIfRecipeIsSaved(currentRecipe.getId()); // Cek status simpan
-                            setRecipeDetailsVisibility(View.VISIBLE); // Tampilkan elemen UI resep
-                        } else {
-                            tvDetailErrorMessage.setText("Gagal memuat detail resep: " + response.message() + " (Kode: " + response.code() + ")");
-                            tvDetailErrorMessage.setVisibility(View.VISIBLE);
-                            Log.e("DetailRecipeActivity", "Error response: " + response.code() + " - " + response.message());
-                            setRecipeDetailsVisibility(View.GONE); // Pastikan UI disembunyikan
-                        }
-                    });
+    private void showError(String message) {
+        progressBarDetail.setVisibility(View.GONE);
+        if (contentLayout != null) {
+            contentLayout.setVisibility(View.GONE);
+        }
+        tvDetailErrorMessage.setText(message);
+        tvDetailErrorMessage.setVisibility(View.VISIBLE);
+    }
+
+    private void loadRecipeDetailsFromApi(int recipeId) {
+        showLoading(true);
+        apiService.getRecipeDetails(recipeId).enqueue(new Callback<Recipe>() {
+            @Override
+            public void onResponse(@NonNull Call<Recipe> call, @NonNull Response<Recipe> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    processAndDisplayRecipe(response.body());
+                } else {
+                    showError("Gagal memuat dari API (Kode: " + response.code() + ")");
                 }
+            }
+            @Override
+            public void onFailure(@NonNull Call<Recipe> call, @NonNull Throwable t) {
+                showError("Kesalahan jaringan: " + t.getMessage());
+            }
+        });
+    }
 
-                @Override
-                public void onFailure(@NonNull Call<Recipe> call, @NonNull Throwable t) {
-                    mainHandler.post(() -> {
-                        progressBarDetail.setVisibility(View.GONE);
-                        tvDetailErrorMessage.setText("Terjadi kesalahan jaringan saat memuat detail: " + t.getMessage());
-                        tvDetailErrorMessage.setVisibility(View.VISIBLE);
-                        Log.e("DetailRecipeActivity", "Network error: ", t);
-                        setRecipeDetailsVisibility(View.GONE); // Pastikan UI disembunyikan
-                    });
-                }
+    private void loadRecipeDetailsFromDatabase(int recipeId) {
+        showLoading(true);
+        appExecutors.diskIO().execute(() -> {
+            try {
+                // MEMANGGIL METODE YANG SUDAH DIPERBAIKI (TIDAK ADA .get())
+                final Recipe loadedRecipe = databaseHelper.getRecipeById(recipeId);
+
+                runOnUiThread(() -> {
+                    if (loadedRecipe != null) {
+                        processAndDisplayRecipe(loadedRecipe);
+                    } else {
+                        showError("Resep tidak ditemukan di database lokal.");
+                    }
+                });
+            } catch (Exception e) {
+                Log.e("DetailActivity", "Error memuat resep dari DB", e);
+                runOnUiThread(() -> showError("Gagal memuat resep dari lokal."));
+            }
+        });
+    }
+
+    private void processAndDisplayRecipe(Recipe recipe) {
+        currentRecipe = recipe;
+        appExecutors.diskIO().execute(() -> {
+            // PROSES BERAT (KONVERSI HTML, DLL) DIJALANKAN DI BACKGROUND
+            final Spanned formattedSummary = (recipe.getSummary() != null && !recipe.getSummary().isEmpty())
+                    ? Html.fromHtml(recipe.getSummary(), Html.FROM_HTML_MODE_COMPACT)
+                    : null;
+            final String ingredientsText = buildIngredientsString(recipe.getIngredients());
+            final String instructionsText = buildInstructionsString(recipe.getAnalyzedInstructions());
+
+            // KIRIM DATA YANG SUDAH SIAP TAMPIL KE UI THREAD
+            runOnUiThread(() -> {
+                displayProcessedRecipe(formattedSummary, ingredientsText, instructionsText);
+                checkIfRecipeIsSaved(recipe.getId());
+                showLoading(false);
             });
         });
     }
 
-    // Metode baru untuk mengontrol visibilitas elemen UI resep
-    private void setRecipeDetailsVisibility(int visibility) {
-        ivRecipeImage.setVisibility(visibility);
-        tvRecipeTitle.setVisibility(visibility);
-        tvReadyInMinutes.setVisibility(visibility);
-        tvServings.setVisibility(visibility);
-        tvCategory.setVisibility(visibility);
-        tvDescription.setVisibility(visibility);
-        tvIngredients.setVisibility(visibility);
-        tvNutritionInfo.setVisibility(visibility);
-        tvInstructions.setVisibility(visibility);
-        btnSaveRecipe.setVisibility(visibility);
-        // btnRemoveRecipe visibility dikontrol oleh checkIfRecipeIsSaved
-        // if (detailContentLayout != null) detailContentLayout.setVisibility(visibility);
-        // Anda juga perlu mengatur visibilitas label TextView jika ada
-        findViewById(R.id.tv_description_label).setVisibility(visibility);
-        findViewById(R.id.tv_ingredients_label).setVisibility(visibility);
-        findViewById(R.id.tv_nutrition_label).setVisibility(visibility);
-        findViewById(R.id.tv_instructions_label).setVisibility(visibility);
-    }
+    private void displayProcessedRecipe(Spanned summary, String ingredients, String instructions) {
+        if (currentRecipe == null) return;
+        Glide.with(this).load(currentRecipe.getImage()).placeholder(R.drawable.ic_placeholder).into(ivRecipeImage);
+        tvRecipeTitle.setText(currentRecipe.getTitle());
 
-
-    private void displayRecipeDetails(Recipe recipe) {
-        if (recipe.getImage() != null && !recipe.getImage().isEmpty()) {
-            Glide.with(this).load(recipe.getImage())
-                    .placeholder(R.drawable.ic_placeholder)
-                    .error(R.drawable.ic_error)
-                    .into(ivRecipeImage);
+        if (currentRecipe.getReadyInMinutes() != null) {
+            tvReadyInMinutes.setText(String.format(Locale.getDefault(), "Waktu: %d menit", currentRecipe.getReadyInMinutes()));
         } else {
-            ivRecipeImage.setImageResource(R.drawable.ic_placeholder);
+            tvReadyInMinutes.setText("Waktu: -");
         }
-
-        tvRecipeTitle.setText(recipe.getTitle());
-        tvReadyInMinutes.setText("Waktu Pembuatan: " + (recipe.getReadyInMinutes() != null ? recipe.getReadyInMinutes() : "-") + " menit");
-        tvServings.setText("Porsi: " + (recipe.getServings() != null ? recipe.getServings() : "-"));
-        tvCategory.setText("Kategori: " + recipe.getMealType());
-
-        if (recipe.getSummary() != null && !recipe.getSummary().isEmpty()) {
-            tvDescription.setText(Html.fromHtml(recipe.getSummary(), Html.FROM_HTML_MODE_COMPACT));
+        if (currentRecipe.getServings() != null) {
+            tvServings.setText(String.format(Locale.getDefault(), "Porsi: %d", currentRecipe.getServings()));
+        } else {
+            tvServings.setText("Porsi: -");
+        }
+        if (currentRecipe.getDishTypes() != null && !currentRecipe.getDishTypes().isEmpty()) {
+            tvCategory.setText(String.format("Kategori: %s", currentRecipe.getDishTypes().get(0)));
+        } else {
+            tvCategory.setText("Kategori: -");
+        }
+        if (summary != null) {
+            tvDescription.setText(summary);
         } else {
             tvDescription.setText("Tidak ada deskripsi tersedia.");
         }
+        tvIngredients.setText(ingredients);
+        tvInstructions.setText(instructions);
+    }
 
-        StringBuilder ingredientsBuilder = new StringBuilder();
-        if (recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()) {
-            for (Ingredient ingredient : recipe.getIngredients()) {
-                ingredientsBuilder.append("• ")
-                        .append(ingredient.getAmount() != null ? String.format("%.2f", ingredient.getAmount()) : "")
-                        .append(" ")
-                        .append(ingredient.getUnit() != null ? ingredient.getUnit() : "")
-                        .append(" ")
-                        .append(ingredient.getName() != null ? ingredient.getName() : "")
-                        .append("\n");
-            }
-            tvIngredients.setText(ingredientsBuilder.toString().trim());
-        } else {
-            tvIngredients.setText("Tidak ada bahan-bahan tersedia.");
+    private String buildIngredientsString(List<Ingredient> ingredients) {
+        if (ingredients == null || ingredients.isEmpty()) {
+            return "Tidak ada bahan-bahan tersedia.";
         }
-
-        StringBuilder nutritionBuilder = new StringBuilder();
-        // Lakukan debugging di sini! Pastikan recipe.getNutrition() tidak null dan getNutrients() tidak null/kosong
-        Log.d("DetailActivity", "Recipe Nutrition: " + (recipe.getNutrition() != null ? "Ada" : "Tidak ada"));
-        if (recipe.getNutrition() != null && recipe.getNutrition().getNutrients() != null && !recipe.getNutrition().getNutrients().isEmpty()) {
-            Log.d("DetailActivity", "Jumlah Nutrisi: " + recipe.getNutrition().getNutrients().size());
-            for (Nutrient nutrient : recipe.getNutrition().getNutrients()) {
-                nutritionBuilder.append(nutrient.getName()).append(": ")
-                        .append(nutrient.getAmount() != null ? String.format("%.2f", nutrient.getAmount()) : "")
-                        .append(" ").append(nutrient.getUnit() != null ? nutrient.getUnit() : "")
-                        .append(" (")
-                        .append(nutrient.getPercentOfDailyNeeds() != null ? String.format("%.2f", nutrient.getPercentOfDailyNeeds()) : "")
-                        .append("% of daily needs)\n");
+        StringBuilder builder = new StringBuilder();
+        for (Ingredient ingredient : ingredients) {
+            builder.append("• ");
+            if (ingredient.getAmount() != null) {
+                double amount = ingredient.getAmount();
+                if (amount == (long) amount) builder.append(String.format(Locale.US, "%d", (long) amount));
+                else builder.append(String.format(Locale.US, "%.2f", amount));
+                builder.append(" ");
             }
-            tvNutritionInfo.setText(nutritionBuilder.toString().trim());
-        } else {
-            tvNutritionInfo.setText("Tidak ada informasi nutrisi tersedia.");
-            Log.d("DetailActivity", "Informasi nutrisi kosong atau null.");
+            if (ingredient.getUnit() != null && !ingredient.getUnit().isEmpty()) {
+                builder.append(ingredient.getUnit()).append(" ");
+            }
+            if (ingredient.getName() != null) {
+                builder.append(ingredient.getName());
+            }
+            builder.append("\n");
         }
+        return builder.toString().trim();
+    }
 
-        StringBuilder instructionsBuilder = new StringBuilder();
-        if (recipe.getAnalyzedInstructions() != null && !recipe.getAnalyzedInstructions().isEmpty()) {
-            for (AnalyzedInstruction instruction : recipe.getAnalyzedInstructions()) {
-                if (instruction.getSteps() != null) {
-                    for (Step step : instruction.getSteps()) {
-                        instructionsBuilder.append(step.getNumber()).append(". ")
-                                .append(step.getStep()).append("\n");
-                    }
+    private String buildInstructionsString(List<AnalyzedInstruction> instructions) {
+        if (instructions == null || instructions.isEmpty()) {
+            return "Tidak ada langkah-langkah tersedia.";
+        }
+        StringBuilder builder = new StringBuilder();
+        for (AnalyzedInstruction instruction : instructions) {
+            if (instruction.getSteps() != null) {
+                for (Step step : instruction.getSteps()) {
+                    builder.append(step.getNumber()).append(". ").append(step.getStep()).append("\n\n");
                 }
             }
-            tvInstructions.setText(instructionsBuilder.toString().trim());
-        } else {
-            tvInstructions.setText("Tidak ada langkah-langkah pembuatan tersedia.");
         }
+        return builder.toString().trim();
     }
 
     private void checkIfRecipeIsSaved(int recipeId) {
-        databaseHelper.isRecipeSaved(recipeId).observe(this, isSaved -> {
-            if (isSaved != null && isSaved) {
-                btnSaveRecipe.setVisibility(View.GONE);
-                btnRemoveRecipe.setVisibility(View.VISIBLE);
-            } else {
-                btnSaveRecipe.setVisibility(View.VISIBLE);
-                btnRemoveRecipe.setVisibility(View.GONE);
-            }
+        appExecutors.diskIO().execute(() -> {
+            final boolean isSaved = databaseHelper.isRecipeSaved(recipeId);
+            runOnUiThread(() -> {
+                btnSaveRecipe.setVisibility(isSaved ? View.GONE : View.VISIBLE);
+                btnRemoveRecipe.setVisibility(isSaved ? View.VISIBLE : View.GONE);
+            });
         });
     }
 
     private void saveRecipe(Recipe recipe) {
-        AppExecutors.getInstance().diskIO().execute(() -> {
+        appExecutors.diskIO().execute(() -> {
             databaseHelper.insertRecipe(recipe);
             runOnUiThread(() -> {
-                Toast.makeText(DetailRecipeActivity.this, "Resep disimpan!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Resep disimpan!", Toast.LENGTH_SHORT).show();
                 checkIfRecipeIsSaved(recipe.getId());
             });
         });
@@ -272,19 +268,35 @@ public class DetailRecipeActivity extends AppCompatActivity {
     private void showDeleteConfirmationDialog(Recipe recipe) {
         new AlertDialog.Builder(this)
                 .setTitle("Hapus Resep")
-                .setMessage("Apakah Anda yakin ingin menghapus resep ini dari daftar tersimpan?")
-                .setPositiveButton("Ya", (dialog, which) -> deleteRecipe(recipe))
+                .setMessage("Apakah Anda yakin ingin menghapus resep ini?")
+                .setPositiveButton("Ya", (dialog, which) -> deleteRecipe(recipe.getId()))
                 .setNegativeButton("Tidak", null)
                 .show();
     }
 
-    private void deleteRecipe(Recipe recipe) {
-        AppExecutors.getInstance().diskIO().execute(() -> {
-            databaseHelper.deleteRecipe(recipe);
+    private void deleteRecipe(int recipeId) {
+        appExecutors.diskIO().execute(() -> {
+            final boolean success = databaseHelper.deleteRecipe(recipeId);
             runOnUiThread(() -> {
-                Toast.makeText(DetailRecipeActivity.this, "Resep dihapus!", Toast.LENGTH_SHORT).show();
-                checkIfRecipeIsSaved(recipe.getId());
+                if (success) {
+                    Toast.makeText(this, "Resep dihapus!", Toast.LENGTH_SHORT).show();
+                    checkIfRecipeIsSaved(recipeId);
+                } else {
+                    Toast.makeText(this, "Gagal menghapus resep.", Toast.LENGTH_SHORT).show();
+                }
             });
         });
+    }
+
+    private void shareRecipe() {
+        if (currentRecipe != null && currentRecipe.getSourceUrl() != null && !currentRecipe.getSourceUrl().isEmpty()) {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Lihat Resep Lezat: " + currentRecipe.getTitle());
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Saya menemukan resep menarik ini: " + currentRecipe.getTitle() + "\nLihat selengkapnya di: " + currentRecipe.getSourceUrl());
+            startActivity(Intent.createChooser(shareIntent, "Bagikan Resep"));
+        } else {
+            Toast.makeText(this, "URL sumber tidak tersedia.", Toast.LENGTH_SHORT).show();
+        }
     }
 }
