@@ -5,7 +5,7 @@
     android:id="@+id/content_layout_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorBackground"
+    android:background="?android:attr/colorBackground"
     tools:context="com.example.projek.DetailRecipeActivity">
 
     <LinearLayout
@@ -48,7 +48,7 @@
                     app:backgroundTint="?attr/colorPrimary"
                     app:borderWidth="0dp"
                     app:fabSize="mini"
-                    app:tint="?attr/colorOnPrimary" />
+                    app:tint="@android:color/white" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/btn_save_recipe"
@@ -59,7 +59,7 @@
                     app:backgroundTint="?attr/colorPrimary"
                     app:borderWidth="0dp"
                     app:fabSize="mini"
-                    app:tint="?attr/colorOnPrimary" />
+                    app:tint="@android:color/white" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/btn_remove_recipe"
@@ -72,7 +72,7 @@
                     app:backgroundTint="?attr/colorSecondary"
                     app:borderWidth="0dp"
                     app:fabSize="mini"
-                    app:tint="?attr/colorOnSecondary" />
+                    app:tint="@android:color/white" />
             </LinearLayout>
 
             <TextView
@@ -85,7 +85,7 @@
                 android:shadowDx="1"
                 android:shadowDy="1"
                 android:shadowRadius="3"
-                android:textColor="@color/white"
+                android:textColor="@android:color/white"
                 android:textSize="26sp"
                 android:textStyle="bold"
                 tools:text="Watermelon Salad with Feta, Walnut &amp; Nigella Seeds" />
@@ -105,12 +105,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="16dp"
-            android:background="?attr/colorErrorContainer"
+            android:background="#FFEBEE"
             android:elevation="2dp"
             android:padding="16dp"
             android:text="Gagal memuat detail resep. Silakan coba lagi."
             android:textAlignment="center"
-            android:textColor="?attr/colorError"
+            android:textColor="#DF5E5E"
             android:visibility="gone" />
 
         <com.google.android.material.card.MaterialCardView
@@ -119,9 +119,7 @@
             android:layout_margin="16dp"
             app:cardBackgroundColor="?attr/colorSurface"
             app:cardCornerRadius="12dp"
-            app:cardElevation="3dp"
-            app:strokeColor="?attr/colorPrimaryVariant"
-            app:strokeWidth="0.5dp">
+            app:cardElevation="3dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -155,13 +153,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="menit"
-                        android:textColor="?attr/colorOnSurfaceVariant" />
+                        android:textColor="?android:attr/textColorSecondary" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="?attr/colorOutline" />
+                    android:background="#E0E0E0" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -189,13 +187,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="porsi"
-                        android:textColor="?attr/colorOnSurfaceVariant" />
+                        android:textColor="?android:attr/textColorSecondary" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="?attr/colorOutline" />
+                    android:background="#E0E0E0" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -230,9 +228,7 @@
             android:layout_marginBottom="16dp"
             app:cardBackgroundColor="?attr/colorSurface"
             app:cardCornerRadius="12dp"
-            app:cardElevation="3dp"
-            app:strokeColor="?attr/colorPrimaryVariant"
-            app:strokeWidth="0.5dp">
+            app:cardElevation="3dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -261,7 +257,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lineSpacingExtra="4dp"
-                    android:textColor="?attr/colorOnSurface"
+                    android:textColor="?android:attr/textColorPrimary"
                     tools:text="Need a gluten free, lacto ovo vegetarian, and primal hor d'oeuvre? Watermelon Salad with Feta, Walnut &amp; Nigella Seeds could be a great recipe to try. One portion of this dish contains roughly 10g of protein, 21g of fat, and a total of 334 calories. This recipe serves 6." />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -274,9 +270,7 @@
             android:layout_marginBottom="16dp"
             app:cardBackgroundColor="?attr/colorSurface"
             app:cardCornerRadius="12dp"
-            app:cardElevation="3dp"
-            app:strokeColor="?attr/colorPrimaryVariant"
-            app:strokeWidth="0.5dp">
+            app:cardElevation="3dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -305,7 +299,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lineSpacingExtra="8dp"
-                    android:textColor="?attr/colorOnSurface"
+                    android:textColor="?android:attr/textColorPrimary"
                     tools:text="• 0.17 cup walnut halves\n• 0.83 lb watermelon\n• 1.17 oz feta cheese\n• 0.5 sprigs mint\n• 0.17 tsp nigella seeds" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -318,9 +312,7 @@
             android:layout_marginBottom="16dp"
             app:cardBackgroundColor="?attr/colorSurface"
             app:cardCornerRadius="12dp"
-            app:cardElevation="3dp"
-            app:strokeColor="?attr/colorPrimaryVariant"
-            app:strokeWidth="0.5dp">
+            app:cardElevation="3dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -349,7 +341,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lineSpacingExtra="8dp"
-                    android:textColor="?attr/colorOnSurface"
+                    android:textColor="?android:attr/textColorPrimary"
                     tools:text="1. Soak walnuts in hot water for five minutes in a bowl. Rinse and cover with cold water and a pinch of salt.\n2. Let stand for a few minutes (it can soak for as long as half a day and will get even better with longer soaking). Rinse and drain.\n3. Cut your watermelon into cubes or use a spoon to scoop out the red flesh and put in a bowl.Cube or crumble the cheese over the watermelon.\n4. Add the walnut pieces and garnish with mint leaves.Put your nigella seeds in a small pan and toast briefly on medium heat until fragrant.\n5. Sprinkle seeds on the salad and enjoy!" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
