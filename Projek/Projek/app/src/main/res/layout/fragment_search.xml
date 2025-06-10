@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context="com.example.projek.SearchFragment"> <EditText
+    android:id="@+id/et_search_query"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="Cari resep (judul, bahan, dll.)"
+    android:inputType="text"
+    android:imeOptions="actionSearch"
+    android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/et_search_diet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Diet (e.g., vegetarian, vegan, gluten free)"
+        android:inputType="text"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btn_perform_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cari"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"/>
+
+    <ProgressBar
+        android:id="@+id/progress_bar_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_search_error_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tidak ada resep yang ditemukan atau terjadi kesalahan."
+        android:visibility="gone"
+        android:layout_gravity="center" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_search_results"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/item_recipe_search"/>
+
+</LinearLayout>

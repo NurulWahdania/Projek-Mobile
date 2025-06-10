@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.projek.DetailRecipeActivity">
+
+    <LinearLayout
+        android:id="@+id/detail_content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ProgressBar
+            android:id="@+id/progress_bar_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"/>
+
+        <TextView
+            android:id="@+id/tv_detail_error_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gagal memuat detail resep. Silakan coba lagi."
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"/>
+
+        <ImageView
+            android:id="@+id/iv_recipe_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="16dp"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
+        <TextView
+            android:id="@+id/tv_recipe_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"
+            tools:text="Watermelon Salad with Feta, Walnut &amp; Nigella Seeds" />
+
+        <TextView
+            android:id="@+id/tv_ready_in_minutes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            tools:text="Waktu Pembuatan: 25 menit" />
+
+        <TextView
+            android:id="@+id/tv_servings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            tools:text="Porsi: 6" />
+
+        <TextView
+            android:id="@+id/tv_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            tools:text="Kategori: Vegetarian" />
+
+        <TextView
+            android:id="@+id/tv_description_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Deskripsi:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/tv_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            tools:text="Need a gluten free, lacto ovo vegetarian, and primal hor d'oeuvre? Watermelon Salad with Feta, Walnut &amp; Nigella Seeds could be a great recipe to try. One portion of this dish contains roughly 10g of protein, 21g of fat, and a total of 334 calories. This recipe serves 6." />
+
+        <TextView
+            android:id="@+id/tv_ingredients_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bahan-bahan:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/tv_ingredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            tools:text="• 0.17 cup walnut halves\n• 0.83 lb watermelon\n• 1.17 oz feta cheese\n• 0.5 sprigs mint\n• 0.17 tsp nigella seeds" />
+
+        <TextView
+            android:id="@+id/tv_nutrition_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Informasi Nutrisi:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/tv_calories_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginBottom="2dp"
+            tools:text="Kalori: 334 kcal" />
+
+        <TextView
+            android:id="@+id/tv_macronutrients_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_marginBottom="2dp"
+            tools:text="Protein: 11% | Lemak: 52% | Karbo: 36%" />
+
+        <TextView
+            android:id="@+id/tv_health_score_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_marginBottom="2dp"
+            tools:text="Skor Kesehatan: 75/100" />
+
+        <TextView
+            android:id="@+id/tv_very_healthy_flag"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textStyle="italic"
+            android:layout_marginBottom="8dp"
+            tools:text="Resep ini sangat sehat!" />
+        <TextView
+            android:id="@+id/tv_nutrition_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            tools:text="Calories: 333.85 kcal (16.69% of daily needs)\nFat: 20.8 g (32.0% of daily needs)\nProtein: 10.18 g (20.35% of daily needs)\nCarbohydrates: 32.64 g (10.88% of daily needs)" />
+
+        <TextView
+            android:id="@+id/tv_instructions_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Langkah-langkah Pembuatan:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/tv_instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            tools:text="1. Soak walnuts in hot water for five minutes in a bowl. Rinse and cover with cold water and a pinch of salt.\n2. Let stand for a few minutes (it can soak for as long as half a day and will get even better with longer soaking). Rinse and drain.\n3. Cut your watermelon into cubes or use a spoon to scoop out the red flesh and put in a bowl.Cube or crumble the cheese over the watermelon.\n4. Add the walnut pieces and garnish with mint leaves.Put your nigella seeds in a small pan and toast briefly on medium heat until fragrant.\n5. Sprinkle seeds on the salad and enjoy!" />
+
+        <Button
+            android:id="@+id/btn_save_recipe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Simpan Resep"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/btn_remove_recipe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hapus Resep"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/btn_share_recipe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bagikan Resep"
+            android:layout_marginTop="8dp"/>
+
+    </LinearLayout>
+</ScrollView>
